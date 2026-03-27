@@ -7,7 +7,7 @@ import google.generativeai as genai
 genai.configure(api_key="AIzaSyBJ2Qi7MmJQWRllziaVb4x9tQ-QQaj3fS4")
 
 # Inicializar modelo
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-1.0-pro")
 
 # Título
 st.title("Chatbot de promedios (con Gemini)")
