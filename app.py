@@ -3,9 +3,8 @@ import pandas as pd
 from logica import calcular_promedios
 import google.generativeai as genai
 
-# Configurar Gemini usando secrets
-import os
-genai.configure(api_key=os.getenv(AIzaSyBJ2Qi7MmJQWRllziaVb4x9tQ-QQaj3fS4))
+# 👉 PON TU API KEY AQUÍ DIRECTAMENTE
+genai.configure(api_key=AIzaSyBJ2Qi7MmJQWRllziaVb4x9tQ-QQaj3fS4)
 
 # Inicializar modelo
 model = genai.GenerativeModel("gemini-1.5-flash")
@@ -51,7 +50,7 @@ Pregunta: {pregunta}
 
     response = model.generate_content(prompt)
 
-    respuesta = response.text
+    respuesta = response.text if hasattr(response, "text") else "No se pudo generar respuesta."
 
     st.session_state.historial.append(("usuario", pregunta))
     st.session_state.historial.append(("assistant", respuesta))
