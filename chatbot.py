@@ -5,115 +5,99 @@ from logica import *  # Importa todas las funciones de logica.py
 df_1 = pd.read_csv("datos/procesados/Data_Recordings_Cleaned_Normalized.zip")
 df_2 = pd.read_csv("datos/procesados/Metrics_Subgroups_Cleaned_Normalized.zip")
 
-# Diccionario de datasets
 datasets = {
-    "data_recordings": df_1,
-    "metrics_subgroups": df_2
+    "recordings": df_1,
+    "metrics": df_2
 }
 
-# Equivalencias entre variables técnicas y lenguaje natural
+# Equivalencias de variables técnicas ↔ lenguaje natural
 equivalencias = {
     # Recordings
-    "fecha": ["fecha", "día", "día de visita", "día que visitó"],
-    "hora": ["hora", "hora exacta", "entrada a la página"],
-    "duracion_sesion": ["duración de la sesión", "cuánto duró la visita"],
-    "duracion_sesion_segundos": ["duración en segundos", "tiempo en segundos"],
-    "direccion_url_entrada": ["entrada url", "página de entrada", "por dónde entró"],
-    "direccion_url_salida": ["última página", "página de salida", "por dónde salió"],
-    "referente": ["referente", "de dónde venía", "fuente"],
-    "id_usuario_clarity": ["id usuario", "identificador", "id técnico"],
-    "explorador": ["navegador", "explorador", "Chrome, Safari"],
-    "dispositivo": ["dispositivo", "tipo de equipo", "celular, computador, tablet"],
-    "sistema_operativo": ["sistema operativo", "OS", "Android, iOS, Windows"],
-    "pais": ["país", "ubicación", "desde dónde se conectó"],
-    "recuento_paginas": ["páginas visitadas", "cuántas páginas", "recuento páginas"],
-    "clics_sesion": ["clics totales", "clics durante la sesión"],
-    "clicks_por_pagina": ["clics por página", "promedio de clics por página"],
-    "tiempo_por_pagina": ["tiempo por página", "tiempo promedio por página"],
-    "interaccion_total": ["interacción total", "actividad general", "nivel de interacción"],
-    "abandono_rapido": ["abandono rápido", "se fue inmediatamente"],
-    "posible_frustracion": ["frustración", "dificultad", "molestia"],
-    "standarized_engagement_score": ["engagement", "nivel de interés", "compromiso usuario"],
-    "entrada_es_home": ["empezó en home", "entrada es home", "inicio en página principal"],
-    "trafico_externo": ["tráfico externo", "vino desde fuera", "Google o redes"],
-
+    "fecha": "día de la visita",
+    "hora": "hora de entrada",
+    "duracion_sesion": "duración de la sesión",
+    "duracion_sesion_segundos": "duración de la sesión en segundos",
+    "direccion_url_entrada": "página de entrada",
+    "direccion_url_salida": "última página vista",
+    "referente": "de dónde venía el usuario",
+    "id_usuario_clarity": "identificador del usuario",
+    "explorador": "navegador usado",
+    "dispositivo": "tipo de equipo",
+    "sistema_operativo": "sistema operativo",
+    "pais": "país de conexión",
+    "recuento_paginas": "cantidad de páginas visitadas",
+    "clics_sesion": "clics totales",
+    "clicks_por_pagina": "clics por página",
+    "tiempo_por_pagina": "tiempo por página",
+    "interaccion_total": "interacción total",
+    "abandono_rapido": "abandono rápido",
+    "posible_frustracion": "posible frustración",
+    "standarized_engagement_score": "nivel de compromiso",
+    "entrada_es_home": "entrada desde home",
+    "trafico_externo": "tráfico externo",
     # Metrics
-    "sessionsCount": ["visitas totales", "número de sesiones", "cuántas visitas hubo"],
-    "sessionsWithMetricPercentage": ["porcentaje de visitas con métrica", "visitas con métrica"],
-    "sessionsWithoutMetricPercentage": ["porcentaje de visitas sin métrica", "visitas sin métrica"],
-    "pagesViews": ["vistas de página", "cuántas veces se vieron las páginas"],
-    "subTotal": ["total parcial", "subtotal"],
-    "Url": ["url", "página web", "dirección web"],
-    "Device": ["dispositivo", "tipo de aparato", "celular, computador, tablet"],
-    "OS": ["sistema operativo", "SO", "Android, iPhone, Windows"],
-    "metricName": ["nombre de métrica", "indicador", "métrica"],
-    "averageScrollDepth": ["profundidad scroll", "qué tanto bajó en la página"],
-    "totalSessionCount": ["total de visitas", "total general de sesiones"],
-    "totalBotSessionCount": ["visitas de bots", "sesiones de bots"],
-    "distinctUserCount": ["usuarios distintos", "personas diferentes", "usuarios únicos"],
-    "pagesPerSessionPercentage": ["páginas por sesión", "promedio de páginas por visita"],
-    "totalTime": ["tiempo total", "duración total"],
-    "activeTime": ["tiempo activo", "actividad efectiva"]
+    "sessionsCount": "total de visitas",
+    "sessionsWithMetricPercentage": "porcentaje de visitas con evento",
+    "sessionsWithoutMetricPercentage": "porcentaje de visitas sin evento",
+    "pagesViews": "vistas de página",
+    "subTotal": "total parcial",
+    "Url": "página web analizada",
+    "Device": "tipo de dispositivo",
+    "OS": "sistema operativo del dispositivo",
+    "metricName": "nombre de la métrica",
+    "averageScrollDepth": "profundidad promedio de scroll",
+    "totalSessionCount": "total de sesiones",
+    "totalBotSessionCount": "visitas de bots",
+    "distinctUserCount": "usuarios distintos",
+    "pagesPerSessionPercentage": "páginas por sesión",
+    "totalTime": "tiempo total",
+    "activeTime": "tiempo activo"
 }
 
-def encontrar_columna(pregunta, dataset_columns):
-    """
-    Busca si alguna palabra clave de la pregunta coincide con las equivalencias.
-    Devuelve la columna técnica correspondiente o None si no encuentra.
-    """
-    pregunta = pregunta.lower()
-    for col, claves in equivalencias.items():
-        for clave in claves:
-            if clave in pregunta:
-                if col in dataset_columns:  # Verifica que exista en el dataset
-                    return col
-    return None
+# Mensaje inicial que explica al usuario qué métricas puede solicitar
+def mensaje_inicial():
+    variables_naturales = [v for v in equivalencias.values()]
+    return (
+        "¡Hola! Puedes pedirme métricas sobre las siguientes variables de los datasets:\n"
+        + ", ".join(variables_naturales)
+        + "\nPor ejemplo, puedes preguntar: '¿Cuál es el promedio de duración de la sesión?' o "
+          "'Muéstrame el total de visitas'."
+    )
 
+# Función principal de respuesta
 def responder(pregunta):
-    """
-    Función principal del chatbot que interpreta la pregunta y aplica funciones de logica.py.
-    """
     pregunta = pregunta.lower()
 
-    # Detecta qué dataset usar según palabras clave en la pregunta
-    dataset = df_1  # default
-    if "metrics" in pregunta:
-        dataset = df_2
-    elif "recordings" in pregunta:
-        dataset = df_1
+    # Revisar si se menciona alguna variable por su nombre natural
+    for var_tecnica, var_natural in equivalencias.items():
+        if var_natural in pregunta:
+            # Decidir dataset por nombre de variable
+            dataset = df_1 if var_tecnica in df_1.columns else df_2
+            # Si existe función de logica.py con nombre 'calcular_<variable>' intentar usarla
+            funcion_nombre = f"calcular_{var_tecnica}"
+            if funcion_nombre in globals() and callable(globals()[funcion_nombre]):
+                try:
+                    resultado = globals()[funcion_nombre](dataset)
+                    return f"Resultado de {var_natural}: {resultado}"
+                except Exception as e:
+                    return f"No se pudo calcular {var_natural}: {str(e)}"
+            else:
+                # Si no hay función específica, intentar promedio si es numérica
+                if var_tecnica in dataset.columns and pd.api.types.is_numeric_dtype(dataset[var_tecnica]):
+                    promedio = dataset[var_tecnica].mean()
+                    return f"Promedio de {var_natural}: {promedio:.2f}"
+                else:
+                    return f"No tengo forma de calcular {var_natural} directamente."
 
-    # Busca si hay alguna columna mencionada en lenguaje natural
-    columna = encontrar_columna(pregunta, dataset.columns)
-    if columna:
-        return f"Parece que te refieres a la columna '{columna}'. Podemos aplicar funciones sobre ella."
-
-    # Lista de funciones disponibles en logica.py
-    funciones_disponibles = {f: globals()[f] for f in dir() if callable(globals()[f])}
-
-    # Detecta si alguna función de logica.py se menciona en la pregunta
-    for nombre_func in funciones_disponibles:
-        if nombre_func.lower() in pregunta:
-            try:
-                resultado = funciones_disponibles[nombre_func](dataset)
-                return f"Resultado de {nombre_func}: {resultado}"
-            except Exception as e:
-                return f"Error al ejecutar {nombre_func}: {str(e)}"
-
-    # Responde preguntas sobre máximos y mínimos
+    # Máximos y mínimos
     if "mayor" in pregunta or "más alto" in pregunta:
-        try:
-            promedios = calcular_promedios(dataset)
-            var = max(promedios, key=promedios.get)
-            return f"La variable con mayor promedio es {var} con {promedios[var]:.2f}"
-        except:
-            return "No se pudo calcular el mayor promedio."
-
+        promedios = df_1.mean(numeric_only=True)
+        var = promedios.idxmax()
+        return f"La variable con mayor promedio es {equivalencias.get(var, var)} con {promedios[var]:.2f}"
+    
     if "menor" in pregunta or "más bajo" in pregunta:
-        try:
-            promedios = calcular_promedios(dataset)
-            var = min(promedios, key=promedios.get)
-            return f"La variable con menor promedio es {var} con {promedios[var]:.2f}"
-        except:
-            return "No se pudo calcular el menor promedio."
+        promedios = df_1.mean(numeric_only=True)
+        var = promedios.idxmin()
+        return f"La variable con menor promedio es {equivalencias.get(var, var)} con {promedios[var]:.2f}"
 
-    return "No entendí la pregunta. Puedes intentar mencionar el nombre de la función o variable que quieres usar."
+    return "No entendí la pregunta. Intenta mencionando el nombre de la variable o métrica que quieres consultar."
