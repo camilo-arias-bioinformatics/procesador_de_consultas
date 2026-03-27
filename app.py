@@ -1,13 +1,15 @@
 import streamlit as st
-from datos import cargar_datos
+import pandas as pd
 from logica import calcular_promedios
 from chatbot import responder
 
 # Título
 st.title("Chatbot de promedios")
 
-# Cargar datos
-df = cargar_datos()
+# Cargar datos directamente desde CSV
+df = pd.read_csv("data.csv")
+
+# Calcular promedios
 promedios = calcular_promedios(df)
 
 # Mostrar datos (opcional)
