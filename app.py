@@ -4,7 +4,7 @@ from logica import calcular_promedios
 from google import genai
 
 # 👉 API KEY directa
-client = genai.Client(api_key="AIzaSyDCIEHETLU6wlf2-FydkwIRqOBrLLjkXo8")
+client = genai.Client(api_key="AIzaSyAbIHAtNbGlRiZniYb8ttmrq9PfuyUkTQQ")
 
 # Título
 st.title("Chatbot de promedios (Gemini)")
