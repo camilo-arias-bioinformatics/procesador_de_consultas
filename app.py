@@ -4,7 +4,7 @@ from logica import calcular_promedios
 from google import genai
 
 # 👉 PON TU API KEY AQUÍ DIRECTAMENTE
-genai.configure(api_key="AIzaSyBJ2Qi7MmJQWRllziaVb4x9tQ-QQaj3fS4")
+client = genai.Client(api_key="AIzaSyBJ2Qi7MmJQWRllziaVb4x9tQ-QQaj3fS4")
 
 # Inicializar modelo
 model = genai.GenerativeModel("gemini-1.0-pro")
