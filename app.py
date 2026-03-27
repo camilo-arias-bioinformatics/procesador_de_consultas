@@ -1,22 +1,22 @@
 import streamlit as st
 import pandas as pd
 from logica import calcular_promedios
-import google.generativeai as genai
+from openai import OpenAI
 
-# 🔐 Configurar API KEY (pon tu clave aquí o usa st.secrets)
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-
-# Cargar modelo (rápido y gratis)
-model = genai.GenerativeModel("gemini-1.5-flash")
+# Inicializar cliente OpenAI
+client = OpenAI(api_key="TU_API_KEY_AQUI")
 
 # Título
-st.title("Chatbot de promedios con Gemini")
+st.title("Chatbot de promedios (con LLM)")
 
-# Cargar datos
+# Cargar datos directamente desde CSV
 df = pd.read_csv("data.csv")
 
 # Calcular promedios
 promedios = calcular_promedios(df)
+
+# Convertir promedios a texto (esto es CLAVE)
+contexto = "\n".join([f"{k}: {v:.2f}" for k, v in promedios.items()])
 
 # Mostrar datos (opcional)
 st.subheader("Datos")
@@ -29,28 +29,31 @@ if "historial" not in st.session_state:
 # Input tipo chat
 pregunta = st.chat_input("Haz una pregunta")
 
-# 🔁 Función que usa Gemini
-def responder_con_llm(pregunta, promedios):
-    contexto = f"""
-    Estos son los promedios de las variables:
-
-    variable_1: {promedios['variable_1']}
-    variable_2: {promedios['variable_2']}
-
-    Responde SOLO con base en estos datos.
-    Si te preguntan cuál es mayor, compáralos correctamente.
-    """
-
-    prompt = contexto + "\nPregunta: " + pregunta
-
-    response = model.generate_content(prompt)
-    
-    return response.text
-
 # Procesar pregunta
 if pregunta:
-    respuesta = responder_con_llm(pregunta, promedios)
     
+    prompt = f"""
+Eres un asistente que responde preguntas SOLO con base en estos promedios:
+
+{contexto}
+
+Reglas:
+- No inventes datos
+- Usa solo la información proporcionada
+- Responde de forma clara
+
+Pregunta: {pregunta}
+"""
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",  # modelo económico / rápido
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
+    )
+
+    respuesta = response.choices[0].message.content
+
     st.session_state.historial.append(("usuario", pregunta))
     st.session_state.historial.append(("assistant", respuesta))
 
