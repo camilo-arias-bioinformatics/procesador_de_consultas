@@ -1,16 +1,13 @@
 import streamlit as st
 import pandas as pd
 from logica import calcular_promedios
-import google.generativeai as genai
+from google import genai
 
 # 👉 API KEY directa
-genai.configure(api_key="AIzaSyChuJKYxO5TNCl2E9lvK_meiCUJJI-y1rM")
-
-# Modelo (este sí existe en v1beta)
-model = genai.GenerativeModel("models/text-bison-001")
+client = genai.Client(api_key="AIzaSyChuJKYxO5TNCl2E9lvK_meiCUJJI-y1rM")
 
 # Título
-st.title("Chatbot de promedios")
+st.title("Chatbot de promedios (Gemini)")
 
 # Cargar datos
 df = pd.read_csv("data.csv")
@@ -35,16 +32,25 @@ pregunta = st.chat_input("Haz una pregunta")
 if pregunta:
 
     prompt = f"""
-Responde SOLO con base en estos promedios:
+Eres un asistente que responde SOLO con base en estos datos:
 
 {contexto}
+
+Reglas:
+- No inventes datos
+- Sé claro
 
 Pregunta: {pregunta}
 """
 
     try:
-        response = model.generate_content(prompt)
-        respuesta = response.text
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt
+        )
+
+        respuesta = response.text if response.text else "Sin respuesta."
+
     except Exception as e:
         respuesta = f"Error: {str(e)}"
 
