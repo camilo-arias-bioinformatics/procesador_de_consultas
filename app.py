@@ -1,13 +1,16 @@
 import streamlit as st
 import pandas as pd
 from logica import calcular_promedios
-from openai import OpenAI
+import google.generativeai as genai
 
-# Inicializar cliente OpenAI usando secrets
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+# Configurar Gemini usando secrets
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+
+# Inicializar modelo
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 # Título
-st.title("Chatbot de promedios (con LLM)")
+st.title("Chatbot de promedios (con Gemini)")
 
 # Cargar datos directamente desde CSV
 df = pd.read_csv("data.csv")
@@ -15,7 +18,7 @@ df = pd.read_csv("data.csv")
 # Calcular promedios
 promedios = calcular_promedios(df)
 
-# Convertir promedios a texto (esto es CLAVE)
+# Convertir promedios a texto
 contexto = "\n".join([f"{k}: {v:.2f}" for k, v in promedios.items()])
 
 # Mostrar datos (opcional)
@@ -31,7 +34,7 @@ pregunta = st.chat_input("Haz una pregunta")
 
 # Procesar pregunta
 if pregunta:
-    
+
     prompt = f"""
 Eres un asistente que responde preguntas SOLO con base en estos promedios:
 
@@ -45,14 +48,9 @@ Reglas:
 Pregunta: {pregunta}
 """
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "user", "content": prompt}
-        ]
-    )
+    response = model.generate_content(prompt)
 
-    respuesta = response.choices[0].message.content
+    respuesta = response.text
 
     st.session_state.historial.append(("usuario", pregunta))
     st.session_state.historial.append(("assistant", respuesta))
