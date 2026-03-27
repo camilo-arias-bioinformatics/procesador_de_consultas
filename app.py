@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from logica import calcular_promedios
-import google.generativeai as genai
+from google import genai
 
 # 👉 PON TU API KEY AQUÍ DIRECTAMENTE
 genai.configure(api_key="AIzaSyBJ2Qi7MmJQWRllziaVb4x9tQ-QQaj3fS4")
