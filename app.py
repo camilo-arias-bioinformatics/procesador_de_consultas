@@ -47,7 +47,7 @@ Pregunta: {pregunta}
 
     try:
         response = client.models.generate_content(
-            model="gemini-1.5-flash",  # modelo actual compatible
+            model="gemini-1.5-flash-latest",  # modelo actual compatible
             contents=prompt
         )
 
