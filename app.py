@@ -4,7 +4,7 @@ from logica import calcular_promedios
 import google.generativeai as genai
 
 # 🔐 Configurar API KEY (pon tu clave aquí o usa st.secrets)
-genai.configure(api_key="TU_API_KEY_AQUI")
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 # Cargar modelo (rápido y gratis)
 model = genai.GenerativeModel("gemini-1.5-flash")
