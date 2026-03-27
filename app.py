@@ -3,16 +3,13 @@ import pandas as pd
 from logica import calcular_promedios
 from google import genai
 
-# 👉 PON TU API KEY AQUÍ DIRECTAMENTE
+# 👉 API KEY directa
 client = genai.Client(api_key="AIzaSyBJ2Qi7MmJQWRllziaVb4x9tQ-QQaj3fS4")
-
-# Inicializar modelo
-model = genai.GenerativeModel("gemini-1.0-pro")
 
 # Título
 st.title("Chatbot de promedios (con Gemini)")
 
-# Cargar datos directamente desde CSV
+# Cargar datos
 df = pd.read_csv("data.csv")
 
 # Calcular promedios
@@ -21,7 +18,7 @@ promedios = calcular_promedios(df)
 # Convertir promedios a texto
 contexto = "\n".join([f"{k}: {v:.2f}" for k, v in promedios.items()])
 
-# Mostrar datos (opcional)
+# Mostrar datos
 st.subheader("Datos")
 st.write(df)
 
@@ -48,9 +45,20 @@ Reglas:
 Pregunta: {pregunta}
 """
 
-    response = model.generate_content(prompt)
+    try:
+        response = client.models.generate_content(
+            model="gemini-1.5-flash",  # modelo actual compatible
+            contents=prompt
+        )
 
-    respuesta = response.text if hasattr(response, "text") else "No se pudo generar respuesta."
+        # Manejo robusto de respuesta
+        if hasattr(response, "text") and response.text:
+            respuesta = response.text
+        else:
+            respuesta = "No se pudo generar respuesta."
+
+    except Exception as e:
+        respuesta = f"Error: {str(e)}"
 
     st.session_state.historial.append(("usuario", pregunta))
     st.session_state.historial.append(("assistant", respuesta))
