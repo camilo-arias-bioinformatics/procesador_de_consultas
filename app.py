@@ -4,7 +4,7 @@ from logica import calcular_promedios
 import google.generativeai as genai
 
 # 👉 API KEY directa
-genai.configure(api_key"AIzaSyChuJKYxO5TNCl2E9lvK_meiCUJJI-y1rM")
+genai.configure(api_key="AIzaSyChuJKYxO5TNCl2E9lvK_meiCUJJI-y1rM")
 
 # Modelo (este sí existe en v1beta)
 model = genai.GenerativeModel("models/text-bison-001")
