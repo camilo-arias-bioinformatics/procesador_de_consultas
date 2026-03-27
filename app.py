@@ -3,8 +3,8 @@ import pandas as pd
 from logica import calcular_promedios
 from openai import OpenAI
 
-# Inicializar cliente OpenAI
-client = OpenAI(api_key="TU_API_KEY_AQUI")
+# Inicializar cliente OpenAI usando secrets
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Título
 st.title("Chatbot de promedios (con LLM)")
@@ -46,7 +46,7 @@ Pregunta: {pregunta}
 """
 
     response = client.chat.completions.create(
-        model="gpt-4o-mini",  # modelo económico / rápido
+        model="gpt-4o-mini",
         messages=[
             {"role": "user", "content": prompt}
         ]
